@@ -19,7 +19,7 @@ function dirclean {
 
 declare -A urls
 urls["cc"]="https://git.openwrt.org/15.05/openwrt.git"
-urls["dd"]="https://git.openwrt.org/openwrt.git"
+urls["dd"]="https://github.com/openwrt/openwrt.git"
 urls["lede"]="https://git.lede-project.org/source.git"
 
 MODEL=$1
