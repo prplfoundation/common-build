@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x
+set -exo pipefail
 
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
@@ -56,11 +56,12 @@ function prepare_build {
  VERSION=$2
  GIT_REPO=$3
  (
+ set -exo pipefail
  cd $DIR/$MODEL
  git -C $VERSION.build pull --ff-only || git clone $GIT_REPO $VERSION.build
- rm $VERSION.build/feeds.conf
+ rm -f $VERSION.build/feeds.conf
  echo "src-link boardcoop $DIR/$MODEL/$VERSION-feed"|cat - $VERSION.feeds.conf > /tmp/out && mv /tmp/out $VERSION.build/feeds.conf
- rm $VERSION.build/.config
+ rm -f $VERSION.build/.config
  cp $VERSION.config $VERSION.build/.config
  cd $VERSION.build
  scripts/feeds update
@@ -81,14 +82,16 @@ function run_build {
   #[ "$ACTION" == "dirclean" ] && dirclean $VERSION.build
   prepare_build $MODEL $VERSION $GIT_REPO
   (
+    set -exo pipefail
     cd $DIR/$MODEL/$VERSION.build
-    make
+    make V=s
   )
   wait
 }
 
 function run_update {
   (
+  set -exo pipefail
   cd $DIR/$1/$2.build
   scripts/diffconfig.sh > $DIR/$1/$2.config
 
@@ -98,6 +101,7 @@ function run_update {
 
 function menuconf {
   (
+  set -exo pipefail
     cd $DIR/$1/$2.build
     make menuconfig
   )
